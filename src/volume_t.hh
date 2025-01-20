@@ -540,7 +540,7 @@ struct exhaust_t
     {
         if(crankshaft.turned())
         {
-            double sample = calc_static_pressure_pa();
+            double sample = calc_total_pressure_pa();
             audio_processor.sample(sample);
         }
     }
