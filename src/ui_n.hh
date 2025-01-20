@@ -1,39 +1,4 @@
-namespace sim
-{
-    const std::string title = "ensim3";
-    const int cycles_per_frame = 1024;
-    const int impulse_size = 8192;
-    const int render_demo_delay_per_edge_ms = 32;
-    const double sample_frequency_hz = 44100.0;
-    const double dt_s = 1.0 / sample_frequency_hz;
-    const int node_bfs_visited_capacity = 32;
-}
-
-namespace dynamics
-{
-    const double four_stroke_r = 4.0 * M_PI;
-}
-
-namespace thermofluidics
-{
-    /* todo: one day add different types that will change these marked values */
-    const double air_fuel_stoich_ratio = 14.7; /* fuel */
-    const double fuel_lower_heating_value_j_per_kg = 44e6; /* fuel */
-    const double autoignition_constant_a = 1200.0; /* fuel */
-    const double autoignition_constant_b = 0.5; /* fuel */
-    const double ntp_static_pressure_pa = 101325.0;
-    const double ntp_static_temperature_k = 293.15;
-    const double stp_static_temperature_k = 273.15;
-    const double molar_mass_combusted_kg_per_mol = 0.02885;
-    const double molar_mass_air_kg_per_mol = 0.0289647;
-    const double molar_mass_fuel_kg_per_mol = 0.11423; /* fuel */
-    const double gamma_fuel = 1.15; /* fuel */
-    const double gamma_combusted = 1.3; /* fuel */
-    const double gamma_air = 1.4;
-    const double r_j_per_mol_k = 8.314;
-}
-
-namespace ui
+namespace ui_n
 {
     const std::string volume_key = "volume_name";
     const double line_spacing = 1.1;

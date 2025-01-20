@@ -18,7 +18,7 @@ struct prop_t
         {
             std::ostringstream stream;
             double double_value = *std::get<double*>(real);
-            double precision = double_value == 0.0 ? 1 : ui::prop_table_double_precision;
+            double precision = double_value == 0.0 ? 1 : ui_n::prop_table_double_precision;
             value = double_to_string(double_value, precision);
         }
         else

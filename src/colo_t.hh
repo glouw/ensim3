@@ -38,7 +38,7 @@ colo_t mix_colos(colo_t colo1, colo_t colo2, double ratio)
 
 struct flashing_colo_t
 {
-    int flip_tick = ui::info_render_ticks;
+    int flip_tick = ui_n::info_render_ticks;
     colo_t on = colo_t::red;
     colo_t off = colo_t::white;
     colo_t colo = off;

@@ -34,7 +34,7 @@ struct sparkplug_t
             double theta_r = calc_otto_theta_r(camshaft.crankshaft.theta_r - ignition_engage_r);
             if(theta_r < 0.0)
             {
-                theta_r += dynamics::four_stroke_r;
+                theta_r += sim_n::four_stroke_r;
             }
             double half_ramp_r = ignition_duration_r / 2.0;
             if(theta_r < half_ramp_r)

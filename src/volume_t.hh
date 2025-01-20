@@ -7,7 +7,7 @@ struct volume_t
     double depth_m = 0.0;
     std::priority_queue<gas_parcel_t, std::vector<gas_parcel_t>, std::greater<>> gas_mail;
     int max_gas_mail_size = 0;
-    port_t* edge_port = nullptr;
+    port_t* port = nullptr;
 
     volume_t(const std::string& name, double diameter_m, double depth_m)
         : name{name}
@@ -30,7 +30,7 @@ struct volume_t
     prop_table_t get_prop_table() override
     {
         prop_table_t prop_table = {
-            {ui::volume_key, &name},
+            {ui_n::volume_key, &name},
             {"volume_diameter_m", &diameter_m},
             {"volume_depth_m", &depth_m},
         };
@@ -49,7 +49,7 @@ struct volume_t
 
     double calc_actual_volume_m3() const
     {
-        return mol_balance * thermofluidics::r_j_per_mol_k * static_temperature_k / calc_static_pressure_pa();
+        return mol_balance * thermofluidics_n::r_j_per_mol_k * static_temperature_k / calc_static_pressure_pa();
     }
 
     double calc_volumetric_efficiency() const
@@ -59,12 +59,12 @@ struct volume_t
 
     double calc_flow_area_m2() const override
     {
-        return edge_port->calc_flow_area_m2();
+        return port->calc_flow_area_m2();
     }
 
     double calc_flow_length_m() const override
     {
-        return edge_port->length_m;
+        return port->length_m;
     }
 
     void receive_mail(const gas_parcel_t& parcel)
@@ -101,11 +101,11 @@ struct volume_t
             add_momentum(-parcel->bulk_momentum_kg_m_per_s);
             tag_mail(*parcel, destination);
             destination.receive_mail(*parcel); /* todo - give self mail 2x travel cycles to simulate back pressure wave */
-            edge_port->flow_velocity_m_per_s.set(parcel->velocity_m_per_s);
+            port->flow_velocity_m_per_s.set(parcel->velocity_m_per_s);
         }
         else
         {
-            edge_port->flow_velocity_m_per_s.set(0.0);
+            port->flow_velocity_m_per_s.set(0.0);
         }
     }
 
@@ -422,7 +422,7 @@ struct piston_t
         double static_pressure_mpa = calc_static_pressure_pa() / 1e6;
         if(static_pressure_mpa > 8.0)
         {
-            return thermofluidics::autoignition_constant_a * std::pow(static_pressure_mpa, thermofluidics::autoignition_constant_b);
+            return thermofluidics_n::autoignition_constant_a * std::pow(static_pressure_mpa, thermofluidics_n::autoignition_constant_b);
         }
         else
         {

@@ -3,26 +3,26 @@ struct node_t
     int x_tile = 0;
     int y_tile = 0;
     std::unique_ptr<volume_t> volume = nullptr;
-    std::unique_ptr<port_t> edge_port = nullptr;
+    std::unique_ptr<port_t> port = nullptr;
     std::vector<node_t*> children;
     prop_table_t prop_table;
     bool is_selected = false;
     bool was_moved = false;
     double work_time_ns = 0.0;
 
-    node_t(int x_tile, int y_tile, std::unique_ptr<volume_t>&& volume, std::unique_ptr<port_t>&& edge_port)
+    node_t(int x_tile, int y_tile, std::unique_ptr<volume_t>&& volume, std::unique_ptr<port_t>&& port)
         : x_tile{x_tile}
         , y_tile{y_tile}
         , volume{std::move(volume)}
-        , edge_port{std::move(edge_port)}
-        , prop_table{this->edge_port->get_prop_table() + this->volume->get_prop_table()}
+        , port{std::move(port)}
+        , prop_table{this->port->get_prop_table() + this->volume->get_prop_table()}
         {
         }
 
     void polymorph(std::unique_ptr<node_t>&& other)
     {
         volume = std::move(other->volume);
-        edge_port = std::move(other->edge_port);
+        port = std::move(other->port);
         prop_table = std::move(other->prop_table);
         /* ... and keep children as is */
     }
@@ -53,7 +53,7 @@ struct node_t
     {
         std::queue<node_t*> queue;
         std::unordered_set<node_t*> visited;
-        visited.reserve(sim::node_bfs_visited_capacity);
+        visited.reserve(sim_n::node_bfs_visited_capacity);
         queue.push(this);
         visited.insert(this);
         while(queue.empty() == false)
@@ -140,7 +140,7 @@ struct node_table_t
         node->volume->on_delete(pistons);
         node->volume->on_delete(injectors);
         node->volume->on_delete(rotational_masses);
-        node->edge_port->on_delete(throttle_ports);
+        node->port->on_delete(throttle_ports);
     }
 
     void create_observers(node_t* node)
@@ -148,7 +148,7 @@ struct node_table_t
         node->volume->on_create(pistons);
         node->volume->on_create(injectors);
         node->volume->on_create(rotational_masses);
-        node->edge_port->on_create(throttle_ports);
+        node->port->on_create(throttle_ports);
     }
 
     std::unique_ptr<node_t>& at(int x_tile, int y_tile)

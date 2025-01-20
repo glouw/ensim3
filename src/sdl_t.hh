@@ -77,13 +77,13 @@ struct sdl_t
             cursor_wait = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_WAIT);
             cursor_size_all = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_SIZEALL);
             set_cursor_arrow();
-            window = SDL_CreateWindow(sim::title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, xres_p, yres_p, SDL_WINDOW_BORDERLESS);
+            window = SDL_CreateWindow(sim_n::title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, xres_p, yres_p, SDL_WINDOW_BORDERLESS);
             renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
             texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, xres_p, yres_p);
-            spec.freq = sim::sample_frequency_hz;
+            spec.freq = sim_n::sample_frequency_hz;
             spec.format = AUDIO_F32SYS;
             spec.channels = 1;
-            spec.samples = sim::cycles_per_frame;
+            spec.samples = sim_n::cycles_per_frame;
             spec.callback = nullptr;
             audio_device = SDL_OpenAudioDevice(nullptr, 0, &spec, nullptr, 0);
             pause_audio();
@@ -124,10 +124,10 @@ struct sdl_t
 
     void p_controller_delay(double cycle_total_ms)
     {
-        double cycle_max_ms = 1000.0 * sim::dt_s * sim::cycles_per_frame;
-        double queue_size_setpoint = 4 * sim::cycles_per_frame;
+        double cycle_max_ms = 1000.0 * sim_n::dt_s * sim_n::cycles_per_frame;
+        double queue_size_setpoint = 4 * sim_n::cycles_per_frame;
         double queue_size_error = queue_size_setpoint - get_audio_queue_size();
-        double p_controller_ms = 2.0 * queue_size_error / sim::cycles_per_frame;
+        double p_controller_ms = 2.0 * queue_size_error / sim_n::cycles_per_frame;
         double delay_ms = cycle_max_ms - cycle_total_ms - p_controller_ms;
         delay(delay_ms);
     }
@@ -189,9 +189,9 @@ struct sdl_t
     void draw_char(int x_p, int y_p, char c, int scale, colo_t colo)
     {
         int index = c - ' ';
-        const uint8_t* at = ui::font[index];
-        for(int row = 0; row < ui::font_size_p; ++row)
-        for(int col = 0; col < ui::font_size_p; ++col)
+        const uint8_t* at = ui_n::font[index];
+        for(int row = 0; row < ui_n::font_size_p; ++row)
+        for(int col = 0; col < ui_n::font_size_p; ++col)
         {
             if(at[row] & (1 << col))
             {
@@ -234,7 +234,7 @@ struct sdl_t
     {
         double angle_r = throttle_port->throttle_cable.pull_ratio * M_PI_2;
         double diameter_m = throttle_port->diameter_m;
-        int diameter_p = ui::throttle_scale * diameter_m;
+        int diameter_p = ui_n::throttle_scale * diameter_m;
         int half_diameter_p = diameter_p / 2;
         int side_offset_p = diameter_p / 2 + 0.1 * diameter_p / 2;
         int x_start_p = x0_p - half_diameter_p * std::cos(angle_r);
@@ -253,17 +253,17 @@ struct sdl_t
     int draw_piston(int x0_p, int y0_p, piston_t* piston)
     {
         double pin_diameter_m = 0.02;
-        int crank_diameter_p = 2.0 * ui::piston_scale * piston->crank_throw_length_m;
-        int bearing_x_p = x0_p + ui::piston_scale * piston->bearing_x_m;
-        int bearing_y_p = y0_p - ui::piston_scale * piston->bearing_y_m;
-        int pin_x_p = x0_p + ui::piston_scale * piston->pin_x_m;
-        int pin_y_p = y0_p - ui::piston_scale * piston->pin_y_m;
-        int pin_diameter_p = ui::piston_scale * pin_diameter_m;
+        int crank_diameter_p = 2.0 * ui_n::piston_scale * piston->crank_throw_length_m;
+        int bearing_x_p = x0_p + ui_n::piston_scale * piston->bearing_x_m;
+        int bearing_y_p = y0_p - ui_n::piston_scale * piston->bearing_y_m;
+        int pin_x_p = x0_p + ui_n::piston_scale * piston->pin_x_m;
+        int pin_y_p = y0_p - ui_n::piston_scale * piston->pin_y_m;
+        int pin_diameter_p = ui_n::piston_scale * pin_diameter_m;
         int head_x0_p = pin_x_p;
         int head_y0_p = pin_y_p;
-        int head_x1_p = pin_x_p + ui::piston_scale * piston->diameter_m;
-        int head_y1_p = pin_y_p + ui::piston_scale * 2.0 * piston->head_compression_height_m;
-        int top_y_p = y0_p - ui::piston_scale * piston->calc_block_deck_surface_m();
+        int head_x1_p = pin_x_p + ui_n::piston_scale * piston->diameter_m;
+        int head_y1_p = pin_y_p + ui_n::piston_scale * 2.0 * piston->head_compression_height_m;
+        int top_y_p = y0_p - ui_n::piston_scale * piston->calc_block_deck_surface_m();
         render_circle_t crank{x0_p, y0_p, crank_diameter_p};
         render_circle_t bearing{bearing_x_p, bearing_y_p, pin_diameter_p};
         render_circle_t pin{pin_x_p, pin_y_p, pin_diameter_p};
@@ -281,8 +281,8 @@ struct sdl_t
         draw_line(head.x0_p, top_y_p, head.x1_p, top_y_p, colo_t::white);
         if(piston->ignition_flame.is_burning)
         {
-            int flame_depth_p = ui::piston_scale * piston->ignition_flame.depth_m;
-            int radius_p = ui::piston_scale * piston->ignition_flame.diameter_m / 2.0;
+            int flame_depth_p = ui_n::piston_scale * piston->ignition_flame.depth_m;
+            int radius_p = ui_n::piston_scale * piston->ignition_flame.diameter_m / 2.0;
             int flame_x0_p = pin_x_p - radius_p;
             int flame_y0_p = top_y_p;
             int flame_x1_p = pin_x_p + radius_p;
@@ -292,9 +292,9 @@ struct sdl_t
         }
         if(piston->autoignition_flame.is_burning)
         {
-            int mid_y_p = top_y_p + ui::piston_scale * piston->calc_chamber_depth_m() / 2.0;
-            int flame_depth_p = ui::piston_scale * piston->autoignition_flame.depth_m;
-            int radius_p = ui::piston_scale * piston->autoignition_flame.diameter_m / 2.0;
+            int mid_y_p = top_y_p + ui_n::piston_scale * piston->calc_chamber_depth_m() / 2.0;
+            int flame_depth_p = ui_n::piston_scale * piston->autoignition_flame.depth_m;
+            int radius_p = ui_n::piston_scale * piston->autoignition_flame.diameter_m / 2.0;
             int flame_x0_p = pin_x_p - radius_p;
             int flame_y0_p = mid_y_p - flame_depth_p / 2;
             int flame_x1_p = pin_x_p + radius_p;
@@ -331,7 +331,7 @@ struct sdl_t
         for(char c : text)
         {
             draw_char(x_p, y_p, c, scale, colo);
-            x_p += ui::font_size_p * scale;
+            x_p += ui_n::font_size_p * scale;
             if(colo == colo_t::green)
             {
                 int last = text.size() - 1;
@@ -347,8 +347,8 @@ struct sdl_t
 
     void draw_texts(int x_p, int y_p, const std::vector<colo_text_t>& texts, int scale, bool center)
     {
-        int size_p = ui::font_size_p * scale;
-        int h_p = size_p * ui::line_spacing;
+        int size_p = ui_n::font_size_p * scale;
+        int h_p = size_p * ui_n::line_spacing;
         int hh_p = size_p + h_p * (texts.size() - 1);
         for(const colo_text_t& text : texts)
         {
@@ -453,8 +453,8 @@ struct sdl_t
 
     void draw_grid()
     {
-        for(int x_p = 0; x_p <= xres_p; x_p += ui::grid_size_p) draw_line(x_p, 0, x_p, yres_p, colo_t::grey);
-        for(int y_p = 0; y_p <= yres_p; y_p += ui::grid_size_p) draw_line(0, y_p, xres_p, y_p, colo_t::grey);
+        for(int x_p = 0; x_p <= xres_p; x_p += ui_n::grid_size_p) draw_line(x_p, 0, x_p, yres_p, colo_t::grey);
+        for(int y_p = 0; y_p <= yres_p; y_p += ui_n::grid_size_p) draw_line(0, y_p, xres_p, y_p, colo_t::grey);
     }
 
     void draw_selection_box()
@@ -470,7 +470,7 @@ struct sdl_t
         render_circle_t circle{
             tile_to_pixel_p(node->x_tile),
             tile_to_pixel_p(node->y_tile),
-            ui::grid_size_p
+            ui_n::grid_size_p
         };
         circle.center();
         draw_render_circle(circle, colo);
@@ -482,7 +482,7 @@ struct sdl_t
             {colo_t::white, double_to_string(node->children.size(), 0)},
             {colo_t::white, double_to_string(node->volume->max_gas_mail_size, 0)},
         };
-        draw_texts(circle.x_p, circle.y_p, texts, ui::node_font_multiplier, true);
+        draw_texts(circle.x_p, circle.y_p, texts, ui_n::node_font_multiplier, true);
     }
 
     void draw_node_connector(node_t* parent, node_t* child)
@@ -495,12 +495,12 @@ struct sdl_t
         render_circle_t from{
             tile_to_pixel_p(parent->x_tile),
             tile_to_pixel_p(parent->y_tile),
-            ui::grid_size_p
+            ui_n::grid_size_p
         };
         render_circle_t to{
             tile_to_pixel_p(child->x_tile),
             tile_to_pixel_p(child->y_tile),
-            ui::grid_size_p
+            ui_n::grid_size_p
         };
         from.center();
         to.center();
@@ -518,14 +518,14 @@ struct sdl_t
         calc_line_endpoints(from, to, theta_r, x1_p, y1_p, x2_p, y2_p);
         int xm_p = (x1_p + x2_p) / 2;
         int ym_p = (y1_p + y2_p) / 2;
-        draw_arrow_between_points(theta_r, x1_p, y1_p, x2_p, y2_p, mix_colos(colo_t::red, colo_t::green, parent->edge_port->open_ratio));
+        draw_arrow_between_points(theta_r, x1_p, y1_p, x2_p, y2_p, mix_colos(colo_t::red, colo_t::green, parent->port->open_ratio));
         std::vector<colo_text_t> texts = {
-            {colo_t::white, parent->edge_port->name},
-            {colo_t::white, double_to_string(parent->edge_port->diameter_m, 3) + " m"},
-            {colo_t::white, double_to_string(parent->edge_port->length_m, 3) + " m"},
-            {colo_t::white, double_to_string(parent->edge_port->open_ratio, 3) + ""},
+            {colo_t::white, parent->port->name},
+            {colo_t::white, double_to_string(parent->port->diameter_m, 3) + " m"},
+            {colo_t::white, double_to_string(parent->port->length_m, 3) + " m"},
+            {colo_t::white, double_to_string(parent->port->open_ratio, 3) + ""},
         };
-        draw_texts(xm_p, ym_p, texts, ui::node_font_multiplier, true);
+        draw_texts(xm_p, ym_p, texts, ui_n::node_font_multiplier, true);
     }
 
     void draw_properties(int x_p, int y_p, prop_table_t* prop_table)
@@ -538,7 +538,7 @@ struct sdl_t
         if(texts.size() > 0)
         {
             texts[append_line].first = is_append_mode ? colo_t::green : colo_t::red;
-            draw_texts(x_p, y_p, texts, ui::font_multiplier, false);
+            draw_texts(x_p, y_p, texts, ui_n::font_multiplier, false);
         }
     }
 
@@ -805,7 +805,7 @@ struct sdl_t
         std::string postfix = "";
         if(is_pause_mode == false)
         {
-            if(render_ticks % ui::info_render_ticks == 0)
+            if(render_ticks % ui_n::info_render_ticks == 0)
             {
                 running_animation_index++;
             }
@@ -818,13 +818,13 @@ struct sdl_t
     {
         frame_time_ms = frame_time_ms_smoother.filter(frame_time_ms);
         sim_time_ms = sim_time_ms_smoother.filter(sim_time_ms);
-        double audio_time_ms = 1000.0 * sim::cycles_per_frame / sim::sample_frequency_hz;
+        double audio_time_ms = 1000.0 * sim_n::cycles_per_frame / sim_n::sample_frequency_hz;
         std::string frame_time_ms_string = double_to_string(frame_time_ms, 1, 4);
         std::string sim_time_ms_string = double_to_string(sim_time_ms, 1, 4);
         std::string audio_time_ms_string = double_to_string(audio_time_ms, 1, 4);
         std::string audio_queue_size = double_to_string(get_audio_queue_size(), 0, 4);
         std::string frame = get_running_animation_frame();
-        std::string text = sim::title + " " + frame + " " + frame_time_ms_string + " + " + sim_time_ms_string + " / " + audio_time_ms_string + " : " + audio_queue_size;
+        std::string text = sim_n::title + " " + frame + " " + frame_time_ms_string + " + " + sim_time_ms_string + " / " + audio_time_ms_string + " : " + audio_queue_size;
         if(is_slowmo_mode)
         {
             text += " slowmo!";
@@ -834,12 +834,12 @@ struct sdl_t
         {
             colo = red_flash.colo;
         }
-        draw_text(x_p, y_p, text, ui::title_font_multiplier, colo);
+        draw_text(x_p, y_p, text, ui_n::title_font_multiplier, colo);
     }
 
     void draw_command_message(int x_p, int y_p, const std::string& message)
     {
-        draw_text(x_p, y_p, message, ui::font_multiplier, colo_t::white);
+        draw_text(x_p, y_p, message, ui_n::font_multiplier, colo_t::white);
     }
 
     void set_cursor_busy()
@@ -902,9 +902,9 @@ struct sdl_t
             {colo_t::white, double_to_string(y_average, plot.precision, plot.width) + " " + plot.y_units},
             {colo_t::white, double_to_string(y_min, plot.precision, plot.width) + " " + plot.y_units},
         };
-        draw_texts(x0, ym, texts, ui::node_font_multiplier, false);
+        draw_texts(x0, ym, texts, ui_n::node_font_multiplier, false);
         draw_render_rect(plot.rect, colo_t::white);
-        draw_text(x0, y0, plot.name, ui::graph_title_font_multiplier, colo_t::white);
+        draw_text(x0, y0, plot.name, ui_n::graph_title_font_multiplier, colo_t::white);
     }
 
     void draw_plot_panel(plot_panel_t& plot_panel)
@@ -952,6 +952,6 @@ struct sdl_t
             {colo_t::white,  "           escape : exit append mode"},
             {colo_t::white,  "           return : exit append mode"},
         };
-        draw_texts(tile_to_pixel_p(0.5), tile_to_pixel_p(0.5), texts, ui::help_font_multiplier, false);
+        draw_texts(tile_to_pixel_p(0.5), tile_to_pixel_p(0.5), texts, ui_n::help_font_multiplier, false);
     }
 };

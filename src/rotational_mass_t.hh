@@ -33,9 +33,9 @@ struct crankshaft_t
 
     void accelerate(double angular_acceleration_r_per_s)
     {
-        angular_velocity_r_per_s += angular_acceleration_r_per_s * sim::dt_s;
+        angular_velocity_r_per_s += angular_acceleration_r_per_s * sim_n::dt_s;
         last_theta_r = theta_r;
-        theta_r += angular_velocity_r_per_s * sim::dt_s;
+        theta_r += angular_velocity_r_per_s * sim_n::dt_s;
     }
 
     bool finished_rotation()
@@ -101,7 +101,7 @@ struct camshaft_t
         double otto_theta_r = calc_otto_theta_r(crankshaft.theta_r);
         if(otto_theta_r < otto_engage_r)
         {
-            otto_theta_r += dynamics::four_stroke_r;
+            otto_theta_r += sim_n::four_stroke_r;
         }
         double open_r = otto_theta_r - otto_engage_r;
         double term1 = 35.0 * std::pow(open_r / ramp_r, 4.0);

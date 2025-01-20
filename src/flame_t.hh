@@ -9,8 +9,8 @@ struct flame_t
 
     double calc_flame_speed_m_per_s(const gas_t& gas) const
     {
-        double term1 = std::pow(gas.calc_static_pressure_pa() / thermofluidics::ntp_static_pressure_pa, pressure_exponent);
-        double term2 = std::pow(gas.static_temperature_k / thermofluidics::stp_static_temperature_k, temperature_exponent);
+        double term1 = std::pow(gas.calc_static_pressure_pa() / thermofluidics_n::ntp_static_pressure_pa, pressure_exponent);
+        double term2 = std::pow(gas.static_temperature_k / thermofluidics_n::stp_static_temperature_k, temperature_exponent);
         return laminar_flame_speed_m_per_s * term1 * term2;
     }
 
@@ -32,7 +32,7 @@ struct flame_t
     void grow(const gas_t& gas, double max_diameter_m, double max_depth_m, double depth_growth_rate)
     {
         double flame_speed_m_per_s = calc_flame_speed_m_per_s(gas);
-        double flame_displacement_m = flame_speed_m_per_s * sim::dt_s;
+        double flame_displacement_m = flame_speed_m_per_s * sim_n::dt_s;
         diameter_m += 2.0 * flame_displacement_m;
         depth_m += depth_growth_rate * flame_displacement_m;
         diameter_m = std::min(diameter_m, max_diameter_m);

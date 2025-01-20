@@ -71,17 +71,17 @@ struct expression_parser_t
             else
             if(ident == "otto")
             {
-                return dynamics::four_stroke_r;
+                return sim_n::four_stroke_r;
             }
             else
             if(ident == "k")
             {
-                return thermofluidics::stp_static_temperature_k;
+                return thermofluidics_n::stp_static_temperature_k;
             }
             else
             if(ident == "atm")
             {
-                return thermofluidics::ntp_static_pressure_pa;
+                return thermofluidics_n::ntp_static_pressure_pa;
             }
             else
             if(lookup)

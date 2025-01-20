@@ -2,11 +2,9 @@ struct plot_values_t
 {
     std::vector<double> values;
 
-    /* left in an invalid state after normalization */
     double min = std::numeric_limits<double>::max();
     double max = std::numeric_limits<double>::lowest();
     double sum = 0.0;
-    /* --- */
 
     void normalize()
     {

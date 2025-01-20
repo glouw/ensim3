@@ -13,9 +13,9 @@ struct gas_t
 
     void normalize()
     {
-        static_temperature_k = thermofluidics::ntp_static_temperature_k;
+        static_temperature_k = thermofluidics_n::ntp_static_temperature_k;
         bulk_momentum_kg_m_per_s = 0.0;
-        moles = thermofluidics::ntp_static_pressure_pa * calc_volume_m3() / (thermofluidics::r_j_per_mol_k * static_temperature_k);
+        moles = thermofluidics_n::ntp_static_pressure_pa * calc_volume_m3() / (thermofluidics_n::r_j_per_mol_k * static_temperature_k);
         air_molar_ratio = 1.0;
         fuel_molar_ratio = 0.0;
         combusted_molar_ratio = 0.0;
@@ -37,23 +37,23 @@ struct gas_t
 
     double calc_molar_mass_kg_per_mol() const
     {
-        return thermofluidics::molar_mass_combusted_kg_per_mol * combusted_molar_ratio
-             + thermofluidics::molar_mass_air_kg_per_mol * air_molar_ratio
-             + thermofluidics::molar_mass_fuel_kg_per_mol * fuel_molar_ratio;
+        return thermofluidics_n::molar_mass_combusted_kg_per_mol * combusted_molar_ratio
+             + thermofluidics_n::molar_mass_air_kg_per_mol * air_molar_ratio
+             + thermofluidics_n::molar_mass_fuel_kg_per_mol * fuel_molar_ratio;
     }
 
     double calc_gamma() const
     {
-        return thermofluidics::gamma_combusted * combusted_molar_ratio
-             + thermofluidics::gamma_air * air_molar_ratio
-             + thermofluidics::gamma_fuel * fuel_molar_ratio;
+        return thermofluidics_n::gamma_combusted * combusted_molar_ratio
+             + thermofluidics_n::gamma_air * air_molar_ratio
+             + thermofluidics_n::gamma_fuel * fuel_molar_ratio;
     }
 
     /* Rs = R / M */
 
     double calc_specific_gas_constant_j_per_kg_k() const
     {
-        return thermofluidics::r_j_per_mol_k / calc_molar_mass_kg_per_mol();
+        return thermofluidics_n::r_j_per_mol_k / calc_molar_mass_kg_per_mol();
     }
 
     /* cv = Rs / (y - 1) */
@@ -94,14 +94,14 @@ struct gas_t
 
     double calc_static_pressure_pa() const
     {
-        return (moles * thermofluidics::r_j_per_mol_k * static_temperature_k) / calc_volume_m3();
+        return (moles * thermofluidics_n::r_j_per_mol_k * static_temperature_k) / calc_volume_m3();
     }
 
     /* P = P - 1 * atm */
 
     double calc_static_gauge_pressure_pa() const
     {
-        return calc_static_pressure_pa() - thermofluidics::ntp_static_pressure_pa;
+        return calc_static_pressure_pa() - thermofluidics_n::ntp_static_pressure_pa;
     }
 
     /* m = n * M */
@@ -206,8 +206,8 @@ struct gas_t
         {
             return air_fuel_mass_upper_ratio_cap;
         }
-        double air_mass_kg = air_molar_ratio * moles * thermofluidics::molar_mass_air_kg_per_mol;
-        double fuel_mass_kg = fuel_molar_ratio * moles * thermofluidics::molar_mass_fuel_kg_per_mol;
+        double air_mass_kg = air_molar_ratio * moles * thermofluidics_n::molar_mass_air_kg_per_mol;
+        double fuel_mass_kg = fuel_molar_ratio * moles * thermofluidics_n::molar_mass_fuel_kg_per_mol;
         double air_fuel_mass_ratio = air_mass_kg / fuel_mass_kg;
         air_fuel_mass_ratio = std::clamp(air_fuel_mass_ratio, 0.0, air_fuel_mass_upper_ratio_cap);
         return air_fuel_mass_ratio;
@@ -265,33 +265,33 @@ struct gas_t
         double burning_moles = burning_mass_kg / calc_molar_mass_kg_per_mol();
         double burning_air_moles = burning_moles * air_molar_ratio;
         double burning_fuel_moles = burning_moles * fuel_molar_ratio;
-        double burning_air_mass_kg = burning_air_moles * thermofluidics::molar_mass_air_kg_per_mol;
-        double burning_fuel_mass_kg = burning_fuel_moles * thermofluidics::molar_mass_fuel_kg_per_mol;
-        if(burning_air_mass_kg / burning_fuel_mass_kg > thermofluidics::air_fuel_stoich_ratio)
+        double burning_air_mass_kg = burning_air_moles * thermofluidics_n::molar_mass_air_kg_per_mol;
+        double burning_fuel_mass_kg = burning_fuel_moles * thermofluidics_n::molar_mass_fuel_kg_per_mol;
+        if(burning_air_mass_kg / burning_fuel_mass_kg > thermofluidics_n::air_fuel_stoich_ratio)
         {
-            burning_air_mass_kg = burning_fuel_mass_kg * thermofluidics::air_fuel_stoich_ratio;
+            burning_air_mass_kg = burning_fuel_mass_kg * thermofluidics_n::air_fuel_stoich_ratio;
         }
         else
         {
-            burning_fuel_mass_kg = burning_air_mass_kg / thermofluidics::air_fuel_stoich_ratio;
+            burning_fuel_mass_kg = burning_air_mass_kg / thermofluidics_n::air_fuel_stoich_ratio;
         }
         double air_moles = moles * air_molar_ratio;
         double fuel_moles = moles * fuel_molar_ratio;
         double combusted_moles = moles * combusted_molar_ratio;
-        double air_mass_kg = air_moles * thermofluidics::molar_mass_air_kg_per_mol;
-        double fuel_mass_kg = fuel_moles * thermofluidics::molar_mass_fuel_kg_per_mol;
-        double combusted_mass_kg = combusted_moles * thermofluidics::molar_mass_combusted_kg_per_mol;
+        double air_mass_kg = air_moles * thermofluidics_n::molar_mass_air_kg_per_mol;
+        double fuel_mass_kg = fuel_moles * thermofluidics_n::molar_mass_fuel_kg_per_mol;
+        double combusted_mass_kg = combusted_moles * thermofluidics_n::molar_mass_combusted_kg_per_mol;
         air_mass_kg -= burning_air_mass_kg;
         fuel_mass_kg -= burning_fuel_mass_kg;
         combusted_mass_kg += burning_air_mass_kg + burning_fuel_mass_kg;
-        double new_air_moles = air_mass_kg / thermofluidics::molar_mass_air_kg_per_mol;
-        double new_fuel_moles = fuel_mass_kg / thermofluidics::molar_mass_fuel_kg_per_mol;
-        double new_combusted_moles = combusted_mass_kg / thermofluidics::molar_mass_combusted_kg_per_mol;
+        double new_air_moles = air_mass_kg / thermofluidics_n::molar_mass_air_kg_per_mol;
+        double new_fuel_moles = fuel_mass_kg / thermofluidics_n::molar_mass_fuel_kg_per_mol;
+        double new_combusted_moles = combusted_mass_kg / thermofluidics_n::molar_mass_combusted_kg_per_mol;
         double new_total_moles = new_air_moles + new_fuel_moles + new_combusted_moles;
         air_molar_ratio = new_air_moles / new_total_moles;
         fuel_molar_ratio = new_fuel_moles / new_total_moles;
         combusted_molar_ratio = new_combusted_moles / new_total_moles;
-        double energy_released_j = burning_fuel_mass_kg * thermofluidics::fuel_lower_heating_value_j_per_kg;
+        double energy_released_j = burning_fuel_mass_kg * thermofluidics_n::fuel_lower_heating_value_j_per_kg;
         static_temperature_k += energy_released_j / (calc_mass_kg() * calc_specific_heat_capacity_at_constant_volume_j_per_kg_k());
     }
 };
@@ -374,10 +374,10 @@ struct flowing_gas_t
         if(calc_flow_area_m2() > 0.0)
         {
             double velocity_m_per_s = calc_velocity_m_per_s(mach_number);
-            double mass_flowed_kg = calc_mass_flow_rate_kg_per_s(mach_number) * sim::dt_s;
+            double mass_flowed_kg = calc_mass_flow_rate_kg_per_s(mach_number) * sim_n::dt_s;
             double moles_flowed = mass_flowed_kg / calc_molar_mass_kg_per_mol();
             double bulk_momentum_flowed_kg_m_per_s = mass_flowed_kg * velocity_m_per_s;
-            int travel_cycles = calc_flow_length_m() / (velocity_m_per_s * sim::dt_s);
+            int travel_cycles = calc_flow_length_m() / (velocity_m_per_s * sim_n::dt_s);
             int arrival_cycle = travel_cycles + cycle;
             return gas_parcel_t{static_temperature_k, bulk_momentum_flowed_kg_m_per_s, moles_flowed, air_molar_ratio, fuel_molar_ratio, combusted_molar_ratio, arrival_cycle, velocity_m_per_s};
         }

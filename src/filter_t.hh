@@ -39,7 +39,7 @@ struct lowpass_filter_t
     double filter(double value) override
     {
         double rc_s = 1.0 / (2.0 * M_PI * cutoff_frequency_hz);
-        double alpha = sim::sample_frequency_hz * rc_s / (sim::sample_frequency_hz * rc_s + 1.0);
+        double alpha = sim_n::sample_frequency_hz * rc_s / (sim_n::sample_frequency_hz * rc_s + 1.0);
         prev_output = alpha * value + (1.0 - alpha) * prev_output;
         return prev_output;
     }
@@ -55,7 +55,7 @@ struct highpass_filter_t
     double filter(double value) override
     {
         double rc_s = 1.0 / (2.0 * M_PI * cutoff_frequency_hz);
-        double alpha = rc_s / (rc_s + sim::dt_s);
+        double alpha = rc_s / (rc_s + sim_n::dt_s);
         double output = alpha * (prev_output + value - prev_input);
         prev_input = value;
         prev_output = output;
@@ -96,8 +96,8 @@ struct convolution_filter_t
 : filter_t
 {
     int at = 0;
-    double buffer[sim::impulse_size] = {};
-    double impulse[sim::impulse_size] = {};
+    double buffer[sim_n::impulse_size] = {};
+    double impulse[sim_n::impulse_size] = {};
 
     convolution_filter_t(const std::string& impulse_filename)
     {
@@ -108,7 +108,7 @@ struct convolution_filter_t
     {
         buffer[at] = sample;
         double result = 0;
-        int y = sim::impulse_size;
+        int y = sim_n::impulse_size;
         int x = y - at;
         for(int i = 0; i < x; i++)
         {
@@ -134,7 +134,7 @@ struct convolution_filter_t
                 impulse[index++] = value;
             }
         }
-        assert(index == sim::impulse_size);
+        assert(index == sim_n::impulse_size);
     }
 };
 

@@ -3,7 +3,7 @@ struct ensim_t
     std::string filename = "test.ensim3";
     std::string command_message = "";
     int cycle = 0;
-    int cycles_per_frame = sim::cycles_per_frame;
+    int cycles_per_frame = sim_n::cycles_per_frame;
     bool is_slowmo_mode = false;
     bool is_done = false;
     int x_tiles = 38;
@@ -417,7 +417,7 @@ struct ensim_t
                 {
                     command_message = "entered regular motion mode";
                     is_slowmo_mode = false;
-                    cycles_per_frame = sim::cycles_per_frame;
+                    cycles_per_frame = sim_n::cycles_per_frame;
                 }
                 else
                 {
@@ -558,7 +558,7 @@ struct ensim_t
                     [this](prop_table_t* prop_table)
                     {
                         prop_t* prop = prop_table->at(sdl.append_line);
-                        if(prop->key == ui::volume_key)
+                        if(prop->key == ui_n::volume_key)
                         {
                             if(select)
                             {
@@ -791,14 +791,14 @@ struct ensim_t
                 parent->volume->autoignite();
                 parent->volume->ignite();
                 parent->volume->read_mail(cycle);
-                parent->edge_port->open();
+                parent->port->open();
                 if(parent->is_selected)
                 {
                     if(crankshaft.turned())
                     {
                         std::vector<double> datum = parent->volume->get_plot_datum();
-                        datum[panel_port_open_ratio] = parent->edge_port->open_ratio;
-                        datum[panel_port_flow_velocity] = parent->edge_port->flow_velocity_m_per_s.get();
+                        datum[panel_port_open_ratio] = parent->port->open_ratio;
+                        datum[panel_port_flow_velocity] = parent->port->flow_velocity_m_per_s.get();
                         plot_panel.buffer(channel++, crankshaft.theta_r, datum);
                     }
                 }
@@ -810,12 +810,12 @@ struct ensim_t
             },
             [this](node_t* parent, node_t* child)
             {
-                /* convention defines edge_port is always parent edge port regardless of flow direction */
+                /* convention defines port is always parent edge port regardless of flow direction */
                 /* todo: 1dcfd will remove this convention - each volume will have input and output port */
-                parent->volume->edge_port = parent->edge_port.get();
-                child->volume->edge_port = parent->edge_port.get();
+                parent->volume->port = parent->port.get();
+                child->volume->port = parent->port.get();
                 double delta_total_pressure_pa = parent->volume->calc_total_pressure_pa() - child->volume->calc_total_pressure_pa();
-                if(std::abs(delta_total_pressure_pa) > parent->edge_port->flow_threshold_pressure_pa)
+                if(std::abs(delta_total_pressure_pa) > parent->port->flow_threshold_pressure_pa)
                 {
                     if(delta_total_pressure_pa > 0.0)
                     {
@@ -903,7 +903,7 @@ struct ensim_t
 
     void render_ui(double frame_time_ms, double sim_time_ms)
     {
-        int x_margin_p = tile_to_pixel_p(0.5); /* todo: top level DSL for GUI coords */
+        int x_margin_p = tile_to_pixel_p(0.5); /* todo: top level DSL for GUI coords in ui_n */
         int y_margin_p = tile_to_pixel_p(0.5);
         sdl.lock();
         sdl.clear();
