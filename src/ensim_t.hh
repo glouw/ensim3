@@ -1,6 +1,6 @@
 struct ensim_t
 {
-    std::string filename = "test.ensim3";
+    std::string filename = "engines/test.ensim3";
     std::string command_message = "";
     int cycle = 0;
     int cycles_per_frame = sim_n::cycles_per_frame;
