@@ -1,5 +1,3 @@
-#pragma once
-
 struct filter_t
 {
     virtual double filter(double value) = 0;

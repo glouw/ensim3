@@ -1,5 +1,3 @@
-#pragma once
-
 struct volume_t
 : flowing_gas_t
 , observable_t

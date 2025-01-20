@@ -1,5 +1,3 @@
-#pragma once
-
 struct render_circle_t
 {
     int x_p = 0;

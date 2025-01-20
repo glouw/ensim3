@@ -1,5 +1,3 @@
-#pragma once
-
 struct gas_t
 : has_prop_table_t
 {

@@ -1,5 +1,3 @@
-#pragma once
-
 struct plot_values_t
 {
     std::vector<double> values;

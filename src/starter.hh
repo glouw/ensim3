@@ -1,5 +1,3 @@
-#pragma once
-
 struct starter_motor_t
 : has_prop_table_t
 , rotational_mass_t

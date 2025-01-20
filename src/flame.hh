@@ -1,5 +1,3 @@
-#pragma once
-
 struct flame_t
 {
     double diameter_m = 0.0;

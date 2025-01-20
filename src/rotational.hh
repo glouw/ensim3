@@ -1,5 +1,3 @@
-#pragma once
-
 struct rotational_mass_t
 {
     virtual double calc_moment_of_inertia_kg_per_m2() const = 0;

@@ -1,12 +1,10 @@
-#pragma once
-
 struct audio_processor_t
 : has_prop_table_t
 {
     std::vector<float> buffer;
     bool use_convolution = true;
     std::unique_ptr<dc_filter_t> dc_filter = std::make_unique<dc_filter_t>();
-    std::unique_ptr<convolution_filter_t> convolution_filter = std::make_unique<convolution_filter_t>("impulses/mild_exhaust.impulse");
+    std::unique_ptr<convolution_filter_t> convolution_filter = std::make_unique<convolution_filter_t>("impulses/impulse.dat");
     std::unique_ptr<brightness_filter_t> brightness_filter = std::make_unique<brightness_filter_t>();
     std::unique_ptr<agc_filter_t> agc_filter = std::make_unique<agc_filter_t>();
     crankshaft_t& crankshaft;

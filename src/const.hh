@@ -1,57 +1,55 @@
-#pragma once
-
 namespace sim
 {
-    constexpr std::string title = "ensim3";
-    constexpr int cycles_per_frame = 1024;
-    constexpr int impulse_size = 8192;
-    constexpr int render_demo_delay_per_edge_ms = 32;
-    constexpr double sample_frequency_hz = 44100.0;
-    constexpr double dt_s = 1.0 / sample_frequency_hz;
-    constexpr int node_bfs_visited_capacity = 32;
+    const std::string title = "ensim3";
+    const int cycles_per_frame = 1024;
+    const int impulse_size = 8192;
+    const int render_demo_delay_per_edge_ms = 32;
+    const double sample_frequency_hz = 44100.0;
+    const double dt_s = 1.0 / sample_frequency_hz;
+    const int node_bfs_visited_capacity = 32;
 }
 
 namespace dynamics
 {
-    constexpr double four_stroke_r = 4.0 * M_PI;
+    const double four_stroke_r = 4.0 * M_PI;
 }
 
 namespace thermofluidics
 {
     /* todo: one day add different types that will change these marked values */
-    constexpr double air_fuel_stoich_ratio = 14.7; /* fuel */
-    constexpr double fuel_lower_heating_value_j_per_kg = 44e6; /* fuel */
-    constexpr double autoignition_constant_a = 1200.0; /* fuel */
-    constexpr double autoignition_constant_b = 0.5; /* fuel */
-    constexpr double ntp_static_pressure_pa = 101325.0;
-    constexpr double ntp_static_temperature_k = 293.15;
-    constexpr double stp_static_temperature_k = 273.15;
-    constexpr double molar_mass_combusted_kg_per_mol = 0.02885;
-    constexpr double molar_mass_air_kg_per_mol = 0.0289647;
-    constexpr double molar_mass_fuel_kg_per_mol = 0.11423; /* fuel */
-    constexpr double gamma_fuel = 1.15; /* fuel */
-    constexpr double gamma_combusted = 1.3; /* fuel */
-    constexpr double gamma_air = 1.4;
-    constexpr double r_j_per_mol_k = 8.314;
+    const double air_fuel_stoich_ratio = 14.7; /* fuel */
+    const double fuel_lower_heating_value_j_per_kg = 44e6; /* fuel */
+    const double autoignition_constant_a = 1200.0; /* fuel */
+    const double autoignition_constant_b = 0.5; /* fuel */
+    const double ntp_static_pressure_pa = 101325.0;
+    const double ntp_static_temperature_k = 293.15;
+    const double stp_static_temperature_k = 273.15;
+    const double molar_mass_combusted_kg_per_mol = 0.02885;
+    const double molar_mass_air_kg_per_mol = 0.0289647;
+    const double molar_mass_fuel_kg_per_mol = 0.11423; /* fuel */
+    const double gamma_fuel = 1.15; /* fuel */
+    const double gamma_combusted = 1.3; /* fuel */
+    const double gamma_air = 1.4;
+    const double r_j_per_mol_k = 8.314;
 }
 
 namespace ui
 {
-    constexpr std::string volume_key = "volume_name";
-    constexpr double line_spacing = 1.1;
-    constexpr int piston_scale = 1024;
-    constexpr int throttle_scale = 2048;
-    constexpr int info_render_ticks = 10;
-    constexpr int grid_size_p = 48;
-    constexpr int font_size_p = 8;
-    constexpr int title_font_multiplier = 2;
-    constexpr int help_font_multiplier = 2;
-    constexpr int font_multiplier = 2;
-    constexpr int node_font_multiplier = 1;
-    constexpr int graph_title_font_multiplier = 1;
-    constexpr int execution_dt_moving_average_samples = 30;
-    constexpr int prop_table_double_precision = 8;
-    constexpr uint8_t font[128][font_size_p] = {
+    const std::string volume_key = "volume_name";
+    const double line_spacing = 1.1;
+    const int piston_scale = 1024;
+    const int throttle_scale = 2048;
+    const int info_render_ticks = 10;
+    const int grid_size_p = 48;
+    const int font_size_p = 8;
+    const int title_font_multiplier = 2;
+    const int help_font_multiplier = 2;
+    const int font_multiplier = 2;
+    const int node_font_multiplier = 1;
+    const int graph_title_font_multiplier = 1;
+    const int execution_dt_moving_average_samples = 30;
+    const int prop_table_double_precision = 8;
+    const uint8_t font[128][font_size_p] = {
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, /* ( ) */
         {0x18, 0x3C, 0x3C, 0x18, 0x18, 0x00, 0x18, 0x00}, /* (!) */
         {0x36, 0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, /* (") */

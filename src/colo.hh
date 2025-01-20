@@ -1,5 +1,3 @@
-#pragma once
-
 enum class colo_t
 : uint32_t
 {

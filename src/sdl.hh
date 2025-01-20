@@ -1,5 +1,3 @@
-#pragma once
-
 struct sdl_t
 {
     int xres_p = 0;

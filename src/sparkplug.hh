@@ -1,5 +1,3 @@
-#pragma once
-
 struct sparkplug_t
 : has_prop_table_t
 {

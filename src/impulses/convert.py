@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 import numpy as np
 
-wav = 'minimal_muffling_01.wav'
+wav = '03.wav'
 
 rate, data = wavfile.read(wav)
 data = data[:8192]

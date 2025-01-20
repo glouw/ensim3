@@ -1,5 +1,3 @@
-#pragma once
-
 struct ensim_t
 {
     std::string filename = "test.ensim3";

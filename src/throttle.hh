@@ -1,5 +1,3 @@
-#pragma once
-
 struct throttle_cable_t
 : has_prop_table_t
 {

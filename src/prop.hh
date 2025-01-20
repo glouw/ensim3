@@ -1,5 +1,3 @@
-#pragma once
-
 struct prop_t
 {
     using real_t = std::variant<double*, int*, bool*, std::string*>;

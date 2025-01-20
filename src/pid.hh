@@ -1,5 +1,3 @@
-#pragma once
-
 struct pid_controller_t
 {
     double kp = 0.0;

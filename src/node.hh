@@ -1,5 +1,3 @@
-#pragma once
-
 struct node_t
 {
     int x_tile = 0;

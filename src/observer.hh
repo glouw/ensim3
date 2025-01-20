@@ -1,5 +1,3 @@
-#pragma once
-
 struct piston_t;
 struct rotational_mass_t;
 struct throttle_port_t;

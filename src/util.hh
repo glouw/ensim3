@@ -1,6 +1,4 @@
-#pragma once
-
-constexpr int snap_p(int value)
+int snap_p(int value)
 {
     int mid_p = ui::grid_size_p / 2;
     return value >= 0
@@ -8,27 +6,27 @@ constexpr int snap_p(int value)
         : ((value - mid_p) / ui::grid_size_p) * ui::grid_size_p;
 }
 
-constexpr int tile_to_pixel_p(double tile)
+int tile_to_pixel_p(double tile)
 {
     return ui::grid_size_p * tile;
 }
 
-constexpr int pixel_to_tile(int pixel_p)
+int pixel_to_tile(int pixel_p)
 {
     return pixel_p / ui::grid_size_p;
 }
 
-constexpr double calc_otto_theta_r(double theta_r)
+double calc_otto_theta_r(double theta_r)
 {
     return std::fmod(theta_r, dynamics::four_stroke_r);
 }
 
-constexpr double calc_circle_area_m2(double diameter_m)
+double calc_circle_area_m2(double diameter_m)
 {
     return M_PI * std::pow(diameter_m / 2.0, 2.0);
 }
 
-constexpr double calc_cylinder_volume_m3(double diameter_m, double depth_m)
+double calc_cylinder_volume_m3(double diameter_m, double depth_m)
 {
     return calc_circle_area_m2(diameter_m) * depth_m;
 }
