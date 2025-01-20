@@ -32,6 +32,19 @@ namespace util_n
         return stream.str();
     }
 
+    double interpolate(double input, double lower_bound, double lower_value, double upper_bound, double upper_value)
+    {
+        if(input <= lower_bound)
+        {
+            return lower_value;
+        }
+        if(input >= upper_bound)
+        {
+            return upper_value;
+        }
+        return lower_value + (input - lower_bound) * (upper_value - lower_value) / (upper_bound - lower_bound);
+    }
+
     /* cache values that need to be displayed by the ui -
      * a cache value _must not_ for computation */
     template <typename T>

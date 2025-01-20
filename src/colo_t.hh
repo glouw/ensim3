@@ -19,10 +19,10 @@ enum class colo_t
     bright_pink    = 0xFF4CA6,
 };
 
-colo_t mix_colos(colo_t colo1, colo_t colo2, double ratio)
+colo_t mix_colos(colo_t colo0, colo_t colo1, double ratio)
 {
-    uint32_t c1 = static_cast<uint32_t>(colo1);
-    uint32_t c2 = static_cast<uint32_t>(colo2);
+    uint32_t c1 = static_cast<uint32_t>(colo0);
+    uint32_t c2 = static_cast<uint32_t>(colo1);
     uint8_t r1 = (c1 >> 16) & 0xFF;
     uint8_t g1 = (c1 >> 8) & 0xFF;
     uint8_t b1 = c1 & 0xFF;

@@ -24,17 +24,14 @@ struct node_t
         volume = std::move(other->volume);
         port = std::move(other->port);
         prop_table = std::move(other->prop_table);
-        /* ... and keep children as is */
     }
 
     void add_child(node_t* child)
     {
-        /* do not add self as child */
         if(child == this)
         {
             return;
         }
-        /* do not add the same child twice */
         std::vector<node_t*>::iterator iterator = find_if(
             children.begin(),
             children.end(),

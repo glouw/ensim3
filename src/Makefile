@@ -1,6 +1,7 @@
-# SINGLE TRANSLATION UNIT BUILD
-# Move inactive "cold" headers to pch.hh and "hot" under-active-development
-# headers to main.cc. Headers dependencies are automatically tracked.
+# single translation unit build system
+#
+# move inactive "cold" headers to pch.hh and "hot" under-active-development
+# headers to main.cc. headers dependencies are automatically tracked.
 
 TARGET = ensim3
 CXX = clang++

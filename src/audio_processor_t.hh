@@ -30,19 +30,6 @@ struct audio_processor_t
         return prop_table;
     }
 
-    double interpolate(double input, double lower_bound, double lower_value, double upper_bound, double upper_value)
-    {
-        if(input <= lower_bound)
-        {
-            return lower_value;
-        }
-        if(input >= upper_bound)
-        {
-            return upper_value;
-        }
-        return lower_value + (input - lower_bound) * (upper_value - lower_value) / (upper_bound - lower_bound);
-    }
-
     void sample(double value)
     {
         agc_filter->gain = interpolate(crankshaft.angular_velocity_r_per_s, lower_angular_velocity_r_per_s, lower_gain, upper_angular_velocity_r_per_s, upper_gain);
