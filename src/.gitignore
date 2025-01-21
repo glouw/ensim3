@@ -1,0 +1,5 @@
+*.d
+*.gch
+ensim3
+log
+tags

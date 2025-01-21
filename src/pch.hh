@@ -10,5 +10,7 @@
 #include <iomanip>
 #include <fstream>
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include <cassert>
 #include <SDL2/SDL.h>

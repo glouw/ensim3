@@ -45,9 +45,9 @@ struct render_rect_t
     bool is_point_inside(int x_p, int y_p) const
     {
         return x_p >= std::min(x0_p, x1_p)
-            && x_p <= std::max(x0_p, x1_p)
-            && y_p >= std::min(y0_p, y1_p)
-            && y_p <= std::max(y0_p, y1_p);
+           and x_p <= std::max(x0_p, x1_p)
+           and y_p >= std::min(y0_p, y1_p)
+           and y_p <= std::max(y0_p, y1_p);
     }
 
     void clear()

@@ -37,7 +37,7 @@ struct flame_t
         depth_m += depth_growth_rate * flame_displacement_m;
         diameter_m = std::min(diameter_m, max_diameter_m);
         depth_m = std::min(depth_m, max_depth_m);
-        if(diameter_m == max_diameter_m && depth_m == max_depth_m)
+        if(diameter_m == max_diameter_m and depth_m == max_depth_m)
         {
             reset();
         }

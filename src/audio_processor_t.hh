@@ -23,6 +23,12 @@ struct audio_processor_t
     prop_table_t get_prop_table() override
     {
         prop_table_t prop_table = {
+            {"audio_processor_lower_brightness_mix_ratio", &lower_brightness_mix_ratio},
+            {"audio_processor_upper_brightness_mix_ratio", &upper_brightness_mix_ratio},
+            {"audio_processor_lower_gain", &lower_gain},
+            {"audio_processor_upper_gain", &upper_gain},
+            {"audio_processor_lower_angular_velocity_r_per_s", &lower_angular_velocity_r_per_s},
+            {"audio_processor_upper_angular_velocity_r_per_s", &upper_angular_velocity_r_per_s},
             {"audio_processor_use_convolution", &use_convolution},
             {"audio_processor_brightness_ratio", &brightness_filter->mix_ratio},
             {"audio_processor_gain", &agc_filter->gain},

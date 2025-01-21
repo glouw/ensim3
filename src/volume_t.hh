@@ -27,6 +27,11 @@ struct volume_t
         {
         }
 
+    std::string get_volume_name() const override
+    {
+        return name;
+    }
+
     prop_table_t get_prop_table() override
     {
         prop_table_t prop_table = {
@@ -76,7 +81,7 @@ struct volume_t
 
     void read_mail(int cycle)
     {
-        while(!gas_mail.empty())
+        while(not gas_mail.empty())
         {
             gas_parcel_t mail = gas_mail.top();
             if(cycle < mail.arrival_cycle)
@@ -149,6 +154,15 @@ struct source_t
         }
 };
 
+struct plenum_t
+: volume_t
+{
+    plenum_t()
+        : volume_t{"plenum", 0.1, 0.1}
+        {
+        }
+};
+
 struct injector_t
 : volume_t
 {
@@ -167,9 +181,9 @@ struct injector_t
     {
         prop_table_t prop_table = {
             {"injector_is_enabled", &is_enabled},
-            {"injector_injector_controller_kp", &pid_controller.kp},
-            {"injector_injector_controller_ki", &pid_controller.ki},
-            {"injector_injector_controller_kd", &pid_controller.kd},
+            {"injector_controller_kp", &pid_controller.kp},
+            {"injector_controller_ki", &pid_controller.ki},
+            {"injector_controller_kd", &pid_controller.kd},
             {"injector_air_fuel_mass_ratio_setpoint", &air_fuel_mass_ratio_setpoint},
         };
         return volume_t::get_prop_table() + prop_table;
@@ -433,7 +447,7 @@ struct piston_t
     void autoignite() override
     {
         double otto_theta_r = calc_otto_theta_r(calc_theta_r());
-        if(otto_theta_r > 1.0 * M_PI && otto_theta_r < 2.0 * M_PI) /* a compression mechanic */
+        if(otto_theta_r > 1.0 * M_PI and otto_theta_r < 2.0 * M_PI) /* a compression mechanic */
         {
             if(static_temperature_k > calc_autoignition_static_temperature_k())
             {
@@ -523,18 +537,23 @@ struct throttle_t
     }
 };
 
-struct exhaust_t
+struct collector_t
 : volume_t
 {
     audio_processor_t& audio_processor;
     crankshaft_t& crankshaft;
 
-    exhaust_t(audio_processor_t& audio_processor, crankshaft_t& crankshaft)
-        : volume_t{"exhaust", 0.1, 0.2}
+    collector_t(audio_processor_t& audio_processor, crankshaft_t& crankshaft)
+        : volume_t{"collector", 0.1, 0.2}
         , audio_processor{audio_processor}
         , crankshaft{crankshaft}
         {
         }
+
+    prop_table_t get_prop_table() override
+    {
+        return volume_t::get_prop_table() + audio_processor.get_prop_table();
+    }
 
     void do_work() override
     {
@@ -551,6 +570,15 @@ struct exhaust_t
         datum[panel_audio_signal] = audio_processor.buffer.back();
         return datum;
     }
+};
+
+struct exhaust_t
+: volume_t
+{
+    exhaust_t()
+        : volume_t{"exhaust", 0.1, 0.1}
+        {
+        }
 };
 
 struct sink_t

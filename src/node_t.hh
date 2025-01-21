@@ -173,7 +173,7 @@ struct node_table_t
 
     bool in_bounds(int x_tile, int y_tile) const
     {
-        return x_tile < x_tiles && x_tile >= 0 && y_tile < y_tiles && y_tile >= 0;
+        return x_tile < x_tiles and x_tile >= 0 and y_tile < y_tiles and y_tile >= 0;
     }
 
     void move(std::unique_ptr<node_t>& node, int x_tile, int y_tile)

@@ -16,7 +16,7 @@ enum class colo_t
     bright_cyan    = 0x4CFFFF,
     bright_magenta = 0xFF4CFF,
     bright_orange  = 0xFFA64C,
-    bright_pink    = 0xFF4CA6,
+    bright_pink    = 0xFF4CA6
 };
 
 colo_t mix_colos(colo_t colo0, colo_t colo1, double ratio)
@@ -57,3 +57,5 @@ struct flashing_colo_t
         }
     }
 };
+
+using colo_text_t = std::pair<colo_t, std::string>;

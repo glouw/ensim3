@@ -8,37 +8,35 @@ struct sdl_t
     void* pixels = nullptr;
     int pitch = 0;
     std::function<void(void)> on_exit;
-    std::function<void(int, int)>
-        edit_on_left_drag,
-        edit_on_shift_left_click_down,
-        edit_on_left_click_down,
-        edit_on_right_click_up,
-        edit_on_left_click_up;
-    std::function<void(void)>
-        edit_on_ctrl_a_key_down,
-        edit_on_ctrl_s_key_down,
-        edit_on_ctrl_l_key_down,
-        edit_on_shift_g_key_down,
-        edit_on_shift_a_key_down,
-        edit_on_1_key_down,
-        edit_on_2_key_down,
-        edit_on_3_key_down,
-        edit_on_4_key_down,
-        edit_on_b_key_down,
-        edit_on_f_key_down,
-        edit_on_g_key_down,
-        edit_on_p_key_down,
-        edit_on_n_key_down,
-        edit_on_i_key_down,
-        edit_on_h_key_down,
-        edit_on_j_key_down,
-        edit_on_k_key_down,
-        edit_on_q_key_down,
-        edit_on_delete_key_down,
-        append_on_ctrl_w_key_down,
-        append_on_esc_key_down,
-        append_on_backspace_key_down,
-        append_on_return_key_down;
+    std::function<void(int, int)> edit_on_left_drag;
+    std::function<void(int, int)> edit_on_shift_left_click_down;
+    std::function<void(int, int)> edit_on_left_click_down;
+    std::function<void(int, int)> edit_on_right_click_up;
+    std::function<void(int, int)> edit_on_left_click_up;
+    std::function<void(void)> edit_on_ctrl_a_key_down;
+    std::function<void(void)> edit_on_ctrl_s_key_down;
+    std::function<void(void)> edit_on_ctrl_l_key_down;
+    std::function<void(void)> edit_on_shift_g_key_down;
+    std::function<void(void)> edit_on_shift_a_key_down;
+    std::function<void(void)> edit_on_1_key_down;
+    std::function<void(void)> edit_on_2_key_down;
+    std::function<void(void)> edit_on_3_key_down;
+    std::function<void(void)> edit_on_4_key_down;
+    std::function<void(void)> edit_on_b_key_down;
+    std::function<void(void)> edit_on_f_key_down;
+    std::function<void(void)> edit_on_g_key_down;
+    std::function<void(void)> edit_on_p_key_down;
+    std::function<void(void)> edit_on_n_key_down;
+    std::function<void(void)> edit_on_i_key_down;
+    std::function<void(void)> edit_on_h_key_down;
+    std::function<void(void)> edit_on_j_key_down;
+    std::function<void(void)> edit_on_k_key_down;
+    std::function<void(void)> edit_on_q_key_down;
+    std::function<void(void)> edit_on_delete_key_down;
+    std::function<void(void)> append_on_ctrl_w_key_down;
+    std::function<void(void)> append_on_esc_key_down;
+    std::function<void(void)> append_on_backspace_key_down;
+    std::function<void(void)> append_on_return_key_down;
     std::function<void(char)> append_on_key_down;
     render_rect_t selection_box;
     SDL_AudioSpec spec;
@@ -67,6 +65,7 @@ struct sdl_t
     };
     moving_average_filter_t frame_time_ms_smoother{128};
     moving_average_filter_t sim_time_ms_smoother{128};
+    pid_controller_t delay_pid{1.0, 0.0, 1.0, 1000.0};
 
     sdl_t(int xres_p, int yres_p)
         : xres_p{xres_p}
@@ -122,13 +121,12 @@ struct sdl_t
         return SDL_GetQueuedAudioSize(audio_device) / sizeof(float);
     }
 
-    void p_controller_delay(double cycle_total_ms)
+    void controller_delay(double cycle_total_ms)
     {
+        double audio_queue_setpoint = 2 * sim_n::cycles_per_frame;
+        double signal_ms = delay_pid.compute(audio_queue_setpoint, get_audio_queue_size());
         double cycle_max_ms = 1000.0 * sim_n::dt_s * sim_n::cycles_per_frame;
-        double queue_size_setpoint = 4 * sim_n::cycles_per_frame;
-        double queue_size_error = queue_size_setpoint - get_audio_queue_size();
-        double p_controller_ms = 2.0 * queue_size_error / sim_n::cycles_per_frame;
-        double delay_ms = cycle_max_ms - cycle_total_ms - p_controller_ms;
+        double delay_ms = cycle_max_ms - cycle_total_ms - signal_ms;
         delay(delay_ms);
     }
 
@@ -168,7 +166,7 @@ struct sdl_t
 
     bool in_bounds(int x_p, int y_p) const
     {
-        return x_p >= 0 && x_p < xres_p && y_p >= 0 && y_p < yres_p;
+        return x_p >= 0 and x_p < xres_p and y_p >= 0 and y_p < yres_p;
     }
 
     void draw_pixel(int x_p, int y_p, colo_t colo)
@@ -343,8 +341,6 @@ struct sdl_t
         }
     }
 
-    using colo_text_t = std::pair<colo_t, std::string>;
-
     void draw_texts(int x_p, int y_p, const std::vector<colo_text_t>& texts, int scale, bool center)
     {
         int size_p = ui_n::font_size_p * scale;
@@ -402,7 +398,7 @@ struct sdl_t
         while(true)
         {
             draw_pixel(x_start_p, y_start_p, colo);
-            if(x_start_p == x_end_p && y_start_p == y_end_p)
+            if(x_start_p == x_end_p and y_start_p == y_end_p)
             {
                 break;
             }
@@ -548,37 +544,37 @@ struct sdl_t
         auto& type = event.type;
         if(type == SDL_KEYDOWN)
         {
-            if(sym == SDLK_9 && (mod & KMOD_LSHIFT)) /* todo - specify append handler in function name */
+            if(sym == SDLK_9 and (mod & KMOD_LSHIFT)) /* todo - specify append handler in function name */
             {
                 append_on_key_down('(');
             }
             else
-            if(sym == SDLK_8 && (mod & KMOD_LSHIFT))
+            if(sym == SDLK_8 and (mod & KMOD_LSHIFT))
             {
                 append_on_key_down('*');
             }
             else
-            if(sym == SDLK_5 && (mod & KMOD_LSHIFT))
+            if(sym == SDLK_5 and (mod & KMOD_LSHIFT))
             {
                 append_on_key_down('%');
             }
             else
-            if(sym == SDLK_0 && (mod & KMOD_LSHIFT))
+            if(sym == SDLK_0 and (mod & KMOD_LSHIFT))
             {
                 append_on_key_down(')');
             }
             else
-            if(sym == SDLK_EQUALS && (mod & KMOD_SHIFT))
+            if(sym == SDLK_EQUALS and (mod & KMOD_SHIFT))
             {
                 append_on_key_down('+');
             }
             else
-            if(sym == SDLK_MINUS && (mod & KMOD_SHIFT))
+            if(sym == SDLK_MINUS and (mod & KMOD_SHIFT))
             {
                 append_on_key_down('_');
             }
             else
-            if(sym == SDLK_w && (mod & KMOD_CTRL))
+            if(sym == SDLK_w and (mod & KMOD_CTRL))
             {
                 append_on_ctrl_w_key_down();
             }
@@ -618,12 +614,12 @@ struct sdl_t
                 append_on_key_down(' ');
             }
             else
-            if(sym >= SDLK_0 && sym <= SDLK_9)
+            if(sym >= SDLK_0 and sym <= SDLK_9)
             {
                 append_on_key_down('0' + (sym - SDLK_0));
             }
             else
-            if(sym >= SDLK_a && sym <= SDLK_z)
+            if(sym >= SDLK_a and sym <= SDLK_z)
             {
                 append_on_key_down('a' + (sym - SDLK_a));
             }
@@ -676,27 +672,27 @@ struct sdl_t
         else
         if(type == SDL_KEYDOWN)
         {
-            if(sym == SDLK_a && (mod & KMOD_CTRL))
+            if(sym == SDLK_a and (mod & KMOD_CTRL))
             {
                 edit_on_ctrl_a_key_down();
             }
             else
-            if(sym == SDLK_s && (mod & KMOD_CTRL))
+            if(sym == SDLK_s and (mod & KMOD_CTRL))
             {
                 edit_on_ctrl_s_key_down();
             }
             else
-            if(sym == SDLK_l && (mod & KMOD_CTRL))
+            if(sym == SDLK_l and (mod & KMOD_CTRL))
             {
                 edit_on_ctrl_l_key_down();
             }
             else
-            if(sym == SDLK_g && (mod & KMOD_LSHIFT))
+            if(sym == SDLK_g and (mod & KMOD_LSHIFT))
             {
                 edit_on_shift_g_key_down();
             }
             else
-            if(sym == SDLK_a && (mod & KMOD_LSHIFT))
+            if(sym == SDLK_a and (mod & KMOD_LSHIFT))
             {
                 edit_on_shift_a_key_down();
             }
@@ -919,38 +915,39 @@ struct sdl_t
     {
         std::vector<colo_text_t> texts = {
             {colo_t::white, "ensim3 - open internal combustion engine simulation research"},
-            {colo_t::white,  ""},
-            {colo_t::white, "louw, gustav copyright (c) 2023-2025 gplv3 - this software"},
-            {colo_t::white, "nigus, hailemariam copyright (c) 2015 cc-by-4.0 - engine load and kinematics"},
-            {colo_t::white, "lantinga, sam et. al copyright (c) 1997-2025 zlib - sdl2"},
+            {colo_t::white, ""},
+            {colo_t::white, "louw, gustav copyright (c) 2023-2025 gplv3: this software"},
+            {colo_t::white, "nigus, hailemariam copyright (c) 2015 cc-by-4.0: engine load and kinematics"},
+            {colo_t::white, "lantinga, sam et. al copyright (c) 1997-2025 zlib: sdl2"},
+            {colo_t::white, "yaghi, ange copyright (c) 2022 mit: exhaust impulses"},
             {colo_t::white, "sondaar, marcel in public domain - this font"},
-            {colo_t::white,  ""},
-            {colo_t::white,  "left click + drag : moves nodes"},
-            {colo_t::white,  " shift left click : select multiple nodes"},
-            {colo_t::white,  "  left click down : select node"},
-            {colo_t::white,  "   right click up : create node or connect node"},
-            {colo_t::white,  "         ctrl + a : select all nodes"},
-            {colo_t::white,  "         ctrl + s : save to disk"},
-            {colo_t::white,  "         ctrl + l : load from disk"},
-            {colo_t::white,  "        shift + g : go to last property"},
-            {colo_t::white,  "        shift + a : enter append mode"},
-            {colo_t::white,  "                1 : throttle (almost) closed"},
-            {colo_t::white,  "                2 : throttle open somewhat"},
-            {colo_t::white,  "                3 : throttle open halfway"},
-            {colo_t::white,  "                4 : throttle fully open"},
-            {colo_t::white,  "                b : make node simulation-entry-node (node circle color becomes red)"},
-            {colo_t::white,  "                f : toggle slo-mo mode"},
-            {colo_t::white,  "                g : go to first property"},
-            {colo_t::white,  "                p : toggle pause mode"},
-            {colo_t::white,  "                n : normalize all nodes to standard pressure and temperature conditions"},
-            {colo_t::white,  "                i : enter append mode"},
-            {colo_t::white,  "                j : go to next property"},
-            {colo_t::yellow, "                h : this help screen"}, /* highlighted, so the user knows where they are */
-            {colo_t::white,  "                k : go to previous property"},
-            {colo_t::white,  "                q : demo breadth first graph execution"},
-            {colo_t::white,  "         ctwl + w : delete a line"},
-            {colo_t::white,  "           escape : exit append mode"},
-            {colo_t::white,  "           return : exit append mode"},
+            {colo_t::white, ""},
+            {colo_t::white, "left click + drag : moves nodes"},
+            {colo_t::white, " shift left click : select multiple nodes"},
+            {colo_t::white, "  left click down : select node"},
+            {colo_t::white, "   right click up : create node or connect node"},
+            {colo_t::white, "         ctrl + a : select all nodes"},
+            {colo_t::white, "         ctrl + s : save to disk"},
+            {colo_t::white, "         ctrl + l : load from disk"},
+            {colo_t::white, "        shift + g : go to last property"},
+            {colo_t::white, "        shift + a : enter append mode"},
+            {colo_t::white, "                1 : throttle (almost) closed"},
+            {colo_t::white, "                2 : throttle open somewhat"},
+            {colo_t::white, "                3 : throttle open halfway"},
+            {colo_t::white, "                4 : throttle fully open"},
+            {colo_t::white, "                b : make node simulation-entry-node (node circle color becomes red)"},
+            {colo_t::white, "                f : toggle slo-mo mode"},
+            {colo_t::white, "                g : go to first property"},
+            {colo_t::white, "                p : toggle pause mode"},
+            {colo_t::white, "                n : normalize all nodes to standard pressure and temperature conditions"},
+            {colo_t::white, "                i : enter append mode"},
+            {colo_t::white, "                j : go to next property"},
+            {colo_t::yellow,"                h : this help screen"}, /* highlighted, so the user knows where they are */
+            {colo_t::white, "                k : go to previous property"},
+            {colo_t::white, "                q : demo breadth first graph execution"},
+            {colo_t::white, "         ctwl + w : delete a line"},
+            {colo_t::white, "           escape : exit append mode"},
+            {colo_t::white, "           return : exit append mode"},
         };
         draw_texts(tile_to_pixel_p(0.5), tile_to_pixel_p(0.5), texts, ui_n::help_font_multiplier, false);
     }

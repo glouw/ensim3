@@ -41,7 +41,7 @@ struct expression_parser_t
     double number(const std::string& s)
     {
         std::string d = "";
-        while(std::isdigit(peek(s)) || peek(s) == '.')
+        while(std::isdigit(peek(s)) or peek(s) == '.')
         {
             d += read(s);
         }
@@ -51,7 +51,7 @@ struct expression_parser_t
     std::string identifier(const std::string& s)
     {
         std::string l = "";
-        while(std::isalnum(peek(s)) || peek(s) == '_')
+        while(std::isalnum(peek(s)) or peek(s) == '_')
         {
             l += read(s);
         }
@@ -114,7 +114,7 @@ struct expression_parser_t
     double term(const std::string& s)
     {
         double a = factor(s);
-        while(peek(s) == '*' || peek(s) == '%' || peek(s) == '/')
+        while(peek(s) == '*' or peek(s) == '%' or peek(s) == '/')
         {
             char op = read(s);
             double b = factor(s);
@@ -139,7 +139,7 @@ struct expression_parser_t
     double expression(const std::string& s)
     {
         double a = term(s);
-        while(peek(s) == '-' || peek(s) == '+')
+        while(peek(s) == '-' or peek(s) == '+')
         {
             char op = read(s);
             double b = term(s);

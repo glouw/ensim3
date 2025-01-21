@@ -10,6 +10,7 @@ struct gas_t
     double mol_balance = 0.0; /* tracks volumetric_efficiency... todo: only works on 0pi aligned piston... bugged for rest */
 
     virtual double calc_volume_m3() const = 0;
+    virtual std::string get_volume_name() const = 0;
 
     void normalize()
     {
@@ -192,7 +193,7 @@ struct gas_t
         double new_moles = moles + delta_moles;
         if(new_moles < 0.0)
         {
-            throw std::runtime_error("negative mole count encountered");
+            throw std::runtime_error("negative mole count encountered in: " + get_volume_name());
         }
         mol_balance += delta_moles;
         static_temperature_k *= std::pow(new_moles / moles, (calc_gamma() - 1.0) / calc_gamma());
@@ -305,6 +306,11 @@ struct gas_parcel_t
     double calc_volume_m3() const override
     {
         throw std::logic_error("gas parcels are dimensionless");
+    }
+
+    std::string get_volume_name() const override
+    {
+        throw std::logic_error("gas parcels are nameless");
     }
 
     gas_parcel_t(double static_temperature_k, double bulk_momentum_kg_m_per_s, double moles, double air_molar_ratio, double fuel_molar_ratio, double combusted_molar_ratio, int arrival_cycle, double velocity_m_per_s)

@@ -3,7 +3,7 @@ struct pid_controller_t
     double kp = 0.0;
     double ki = 0.0; /* todo: deal with integral windup? */
     double kd = 0.0;
-    double scale = 0.0;
+    double scale = 1.0;
     double previous_error = 0.0;
     double integral = 0.0;
 

@@ -194,7 +194,7 @@ struct ensim_t
         while(std::getline(stream, pair, ','))
         {
             size_t pos = pair.find('=');
-            if(pos != std::string::npos)
+            if(pos not_eq std::string::npos)
             {
                 std::string key = pair.substr(0, pos);
                 std::string value = pair.substr(pos + 1);
@@ -617,6 +617,12 @@ struct ensim_t
             port = std::make_unique<throttle_port_t>(throttle_cable);
         }
         else
+        if(name == "plenum")
+        {
+            volume = std::make_unique<plenum_t>();
+            port = std::make_unique<port_t>();
+        }
+        else
         if(name == "injector")
         {
             volume = std::make_unique<injector_t>(throttle_cable);
@@ -629,9 +635,15 @@ struct ensim_t
             port = std::make_unique<actuated_port_t>(camshaft, 3.0 * M_PI, M_PI);
         }
         else
+        if(name == "collector")
+        {
+            volume = std::make_unique<collector_t>(audio_processor, crankshaft);
+            port = std::make_unique<port_t>();
+        }
+        else
         if(name == "exhaust")
         {
-            volume = std::make_unique<exhaust_t>(audio_processor, crankshaft);
+            volume = std::make_unique<exhaust_t>();
             port = std::make_unique<port_t>();
         }
         else
@@ -652,8 +664,7 @@ struct ensim_t
             + camshaft.get_prop_table()
             + flywheel.get_prop_table()
             + throttle_cable.get_prop_table()
-            + starter_motor.get_prop_table()
-            + audio_processor.get_prop_table();
+            + starter_motor.get_prop_table();
         return node;
     }
 
@@ -678,7 +689,7 @@ struct ensim_t
         node_table.iterate(
             [this, &count](std::unique_ptr<node_t>& node)
             {
-                if(node.get() != graph)
+                if(node.get() not_eq graph)
                 {
                     if(node.get() == select)
                     {
@@ -844,10 +855,10 @@ struct ensim_t
             {
                 run_sim_once();
             }
-            catch(...)
+            catch(const std::exception& exception)
             {
                 normalize_all_nodes();
-                command_message = "simulation reset !!! nan encountered !!!";
+                command_message = exception.what();
             }
         }
         if(is_slowmo_mode == false)
@@ -946,7 +957,7 @@ struct ensim_t
         double frame_time_ms = 0;
         run_sim_once();
         int frames [[maybe_unused]] = 0;
-        while(!is_done)
+        while(not is_done)
         {
             auto t0 = std::chrono::high_resolution_clock::now();
             sdl.handle_input();
@@ -968,7 +979,7 @@ struct ensim_t
             }
             auto t2 = std::chrono::high_resolution_clock::now();
             frame_time_ms = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count() / 1e6;
-            sdl.p_controller_delay(frame_time_ms + sim_time_ms);
+            sdl.controller_delay(frame_time_ms + sim_time_ms);
 #ifdef PERF
             frames++;
             if(frames == 120) /* todo: this is a magic number */
