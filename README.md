@@ -6,6 +6,7 @@ The internal combustion simulator with real time audio synthesis.
 
 ```
 your-build-system --install sdl2
+cd src
 make
 ./ensim3
 ```
