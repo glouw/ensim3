@@ -13,6 +13,10 @@ make
 ./ensim3
 ```
 
+### Use
+
+Press key `h` for a general help screen (and attributions).
+
 ### Source
 
 Modules are emulated with headers and included in main.cc. Postfix `_n` defines

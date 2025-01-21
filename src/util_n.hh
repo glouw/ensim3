@@ -45,6 +45,11 @@ namespace util_n
         return lower_value + (input - lower_bound) * (upper_value - lower_value) / (upper_bound - lower_bound);
     }
 
+    double calc_weighted_average(double value1, double weight1, double value2, double weight2)
+    {
+        return (value1 * weight1 + value2 * weight2) / (weight1 + weight2);
+    }
+
     /* cache values that need to be displayed by the ui -
      * a cache value _must not_ for computation */
     template <typename T>

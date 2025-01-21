@@ -239,16 +239,6 @@ struct gas_t
         static_temperature_k *= std::pow(compression_ratio_m3, calc_gamma() - 1.0);
     }
 
-    /* w1 * x1 + w2 * x2
-     * -----------------
-     *      w1 + w
-     */
-
-    double calc_weighted_average(double value1, double weight1, double value2, double weight2)
-    {
-        return (value1 * weight1 + value2 * weight2) / (weight1 + weight2);
-    }
-
     void mix_in(const gas_t& gas)
     {
         add_moles_adiabatically(gas.moles);
