@@ -3,8 +3,6 @@ namespace thermofluidics_n
     /* todo: one day add different types that will change these marked values */
     const double air_fuel_stoich_ratio = 14.7; /* fuel */
     const double fuel_lower_heating_value_j_per_kg = 44e6; /* fuel */
-    const double autoignition_constant_a = 1200.0; /* fuel */
-    const double autoignition_constant_b = 0.5; /* fuel */
     const double ntp_static_pressure_pa = 101325.0;
     const double ntp_static_temperature_k = 293.15;
     const double stp_static_temperature_k = 273.15;

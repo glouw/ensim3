@@ -83,13 +83,13 @@ struct volume_t
     {
         while(not gas_mail.empty())
         {
-            gas_parcel_t mail = gas_mail.top();
-            if(cycle < mail.arrival_cycle)
+            const gas_parcel_t& mail = gas_mail.top();
+            if(mail.arrival_cycle > cycle)
             {
                 break;
             }
-            gas_mail.pop();
             mix_in(mail);
+            gas_mail.pop();
         }
     }
 
@@ -99,14 +99,15 @@ struct volume_t
 
     void send_mail(volume_t& destination, int cycle)
     {
-        double mach_number = calc_mach_number(destination);
-        if(std::optional<gas_parcel_t> parcel = package_gas_parcel(mach_number, cycle))
+        if(calc_flow_area_m2() > 0.0)
         {
-            add_moles_adiabatically(-parcel->moles);
-            add_momentum(-parcel->bulk_momentum_kg_m_per_s);
-            tag_mail(*parcel, destination);
-            destination.receive_mail(*parcel); /* todo - give self mail 2x travel cycles to simulate back pressure wave */
-            port->flow_velocity_m_per_s.set(parcel->velocity_m_per_s);
+            double mach_number = calc_mach_number(destination);
+            gas_parcel_t parcel = package_gas_parcel(mach_number, cycle);
+            add_moles_adiabatically(-parcel.moles);
+            add_momentum(-parcel.bulk_momentum_kg_m_per_s);
+            tag_mail(parcel, destination);
+            destination.receive_mail(parcel);
+            port->flow_velocity_m_per_s.set(parcel.velocity_m_per_s);
         }
         else
         {
@@ -137,10 +138,6 @@ struct volume_t
     }
 
     virtual void ignite()
-    {
-    }
-
-    virtual void autoignite()
     {
     }
 };
@@ -255,8 +252,7 @@ struct piston_t
     double friction_coefficient = 0.001;
     camshaft_t& camshaft;
     sparkplug_t sparkplug{camshaft};
-    flame_t ignition_flame;
-    flame_t autoignition_flame;
+    flame_t flame;
 
     piston_t(camshaft_t& camshaft)
         : volume_t{"piston"}
@@ -422,46 +418,12 @@ struct piston_t
         double ignition_ratio = sparkplug.calc_ignition_ratio();
         if(ignition_ratio > 0.95)
         {
-            ignition_flame.ignite();
+            flame.ignite();
         }
-        if(ignition_flame.is_burning)
+        if(flame.is_burning)
         {
-            ignition_flame.grow(*this, diameter_m, depth_m, 1.0); /* from top - grows only down */
-            burn_fuel(ignition_flame.calc_volume_m3());
-        }
-    }
-
-    double calc_autoignition_static_temperature_k()
-    {
-        double static_pressure_mpa = calc_static_pressure_pa() / 1e6;
-        if(static_pressure_mpa > 8.0)
-        {
-            return thermofluidics_n::autoignition_constant_a * std::pow(static_pressure_mpa, thermofluidics_n::autoignition_constant_b);
-        }
-        else
-        {
-            return std::numeric_limits<double>::max();
-        }
-    }
-
-    void autoignite() override
-    {
-        double otto_theta_r = calc_otto_theta_r(calc_theta_r());
-        if(otto_theta_r > 1.0 * M_PI and otto_theta_r < 2.0 * M_PI) /* a compression mechanic */
-        {
-            if(static_temperature_k > calc_autoignition_static_temperature_k())
-            {
-                autoignition_flame.ignite();
-            }
-            if(autoignition_flame.is_burning)
-            {
-                autoignition_flame.grow(*this, diameter_m, depth_m, 2.0); /* from center - grows up and down */
-                burn_fuel(autoignition_flame.calc_volume_m3());
-            }
-        }
-        else
-        {
-            autoignition_flame.reset();
+            flame.grow(*this, diameter_m, depth_m, 1.0); /* from top - grows only down */
+            burn_fuel_by_volume(flame.calc_volume_m3());
         }
     }
 };

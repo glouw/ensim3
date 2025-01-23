@@ -18,6 +18,7 @@ struct port_t
     double flow_coefficient = 1.0;
     double flow_threshold_pressure_pa = 0.0;
     cached_t<double> flow_velocity_m_per_s = 0.0;
+    double work_time_ns = 0.0;
 
     port_t(const std::string& name, double flow_threshold_pressure_pa)
         : name{name}

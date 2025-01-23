@@ -58,22 +58,27 @@ struct node_t
             node_t* parent = queue.front();
             queue.pop();
             auto t0 = std::chrono::high_resolution_clock::now();
-            if(handle_node(parent))
+            bool is_done = handle_node(parent);
+            auto t1 = std::chrono::high_resolution_clock::now();
+            if(is_done)
             {
                 break;
             }
             for(node_t* child : parent->children)
             {
+                auto t2 = std::chrono::high_resolution_clock::now();
                 handle_edge(parent, child);
+                auto t3 = std::chrono::high_resolution_clock::now();
+                auto work_time_edge_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t3 - t2).count();
+                parent->port->work_time_ns += work_time_edge_ns;
                 if(visited.contains(child) == false)
                 {
                     queue.push(child);
                     visited.insert(child);
                 }
             }
-            auto t1 = std::chrono::high_resolution_clock::now();
-            auto dt_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
-            parent->work_time_ns += dt_ns;
+            auto work_time_parent_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t1 - t0).count();
+            parent->work_time_ns += work_time_parent_ns;
         }
     }
 

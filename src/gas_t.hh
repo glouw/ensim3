@@ -249,11 +249,8 @@ struct gas_t
         static_temperature_k = calc_weighted_average(static_temperature_k, moles, gas.static_temperature_k, gas.moles);
     }
 
-    void burn_fuel(double burning_volume_m3)
+    void burn_fuel_by_moles(double burning_moles)
     {
-        double volume_ratio = burning_volume_m3 / calc_volume_m3();
-        double burning_mass_kg = calc_mass_kg() * volume_ratio;
-        double burning_moles = burning_mass_kg / calc_molar_mass_kg_per_mol();
         double burning_air_moles = burning_moles * air_molar_ratio;
         double burning_fuel_moles = burning_moles * fuel_molar_ratio;
         double burning_air_mass_kg = burning_air_moles * thermofluidics_n::molar_mass_air_kg_per_mol;
@@ -284,6 +281,14 @@ struct gas_t
         combusted_molar_ratio = new_combusted_moles / new_total_moles;
         double energy_released_j = burning_fuel_mass_kg * thermofluidics_n::fuel_lower_heating_value_j_per_kg;
         static_temperature_k += energy_released_j / (calc_mass_kg() * calc_specific_heat_capacity_at_constant_volume_j_per_kg_k());
+    }
+
+    void burn_fuel_by_volume(double burning_volume_m3)
+    {
+        double volume_ratio = burning_volume_m3 / calc_volume_m3();
+        double burning_mass_kg = calc_mass_kg() * volume_ratio;
+        double burning_moles = burning_mass_kg / calc_molar_mass_kg_per_mol();
+        burn_fuel_by_moles(burning_moles);
     }
 };
 
@@ -365,18 +370,14 @@ struct flowing_gas_t
         return calc_mass_flow_rate_kg_per_s(mach_number) / (calc_total_density_kg_per_m3(mach_number) * calc_flow_area_m2());
     }
 
-    std::optional<gas_parcel_t> package_gas_parcel(double mach_number, int cycle)
+    gas_parcel_t package_gas_parcel(double mach_number, int cycle)
     {
-        if(calc_flow_area_m2() > 0.0)
-        {
-            double velocity_m_per_s = calc_velocity_m_per_s(mach_number);
-            double mass_flowed_kg = calc_mass_flow_rate_kg_per_s(mach_number) * sim_n::dt_s;
-            double moles_flowed = mass_flowed_kg / calc_molar_mass_kg_per_mol();
-            double bulk_momentum_flowed_kg_m_per_s = mass_flowed_kg * velocity_m_per_s;
-            int travel_cycles = calc_flow_length_m() / (velocity_m_per_s * sim_n::dt_s);
-            int arrival_cycle = travel_cycles + cycle;
-            return gas_parcel_t{static_temperature_k, bulk_momentum_flowed_kg_m_per_s, moles_flowed, air_molar_ratio, fuel_molar_ratio, combusted_molar_ratio, arrival_cycle, velocity_m_per_s};
-        }
-        return std::nullopt;
+        double velocity_m_per_s = calc_velocity_m_per_s(mach_number);
+        double mass_flowed_kg = calc_mass_flow_rate_kg_per_s(mach_number) * sim_n::dt_s;
+        double moles_flowed = mass_flowed_kg / calc_molar_mass_kg_per_mol();
+        double bulk_momentum_flowed_kg_m_per_s = mass_flowed_kg * velocity_m_per_s;
+        int travel_cycles = calc_flow_length_m() / (velocity_m_per_s * sim_n::dt_s);
+        int arrival_cycle = travel_cycles + cycle;
+        return gas_parcel_t{static_temperature_k, bulk_momentum_flowed_kg_m_per_s, moles_flowed, air_molar_ratio, fuel_molar_ratio, combusted_molar_ratio, arrival_cycle, velocity_m_per_s};
     }
 };

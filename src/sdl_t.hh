@@ -277,10 +277,10 @@ struct sdl_t
         draw_render_circle_tangent_lines(bearing, pin, colo_t::white);
         draw_render_rect(head, colo_t::white);
         draw_line(head.x0_p, top_y_p, head.x1_p, top_y_p, colo_t::white);
-        if(piston->ignition_flame.is_burning)
+        if(piston->flame.is_burning)
         {
-            int flame_depth_p = ui_n::piston_scale * piston->ignition_flame.depth_m;
-            int radius_p = ui_n::piston_scale * piston->ignition_flame.diameter_m / 2.0;
+            int flame_depth_p = ui_n::piston_scale * piston->flame.depth_m;
+            int radius_p = ui_n::piston_scale * piston->flame.diameter_m / 2.0;
             int flame_x0_p = pin_x_p - radius_p;
             int flame_y0_p = top_y_p;
             int flame_x1_p = pin_x_p + radius_p;
@@ -288,11 +288,11 @@ struct sdl_t
             render_rect_t flame{flame_x0_p, flame_y0_p, flame_x1_p, flame_y1_p};
             draw_render_rect(flame, colo_t::red);
         }
-        if(piston->autoignition_flame.is_burning)
+        if(piston->flame.is_burning)
         {
             int mid_y_p = top_y_p + ui_n::piston_scale * piston->calc_chamber_depth_m() / 2.0;
-            int flame_depth_p = ui_n::piston_scale * piston->autoignition_flame.depth_m;
-            int radius_p = ui_n::piston_scale * piston->autoignition_flame.diameter_m / 2.0;
+            int flame_depth_p = ui_n::piston_scale * piston->flame.depth_m;
+            int radius_p = ui_n::piston_scale * piston->flame.diameter_m / 2.0;
             int flame_x0_p = pin_x_p - radius_p;
             int flame_y0_p = mid_y_p - flame_depth_p / 2;
             int flame_x1_p = pin_x_p + radius_p;
@@ -473,10 +473,11 @@ struct sdl_t
         std::vector<colo_text_t> texts = {
             {colo_t::white, double_to_string(node->volume->calc_total_pressure_pa(), 0) + " pa"},
             {colo_t::white, node->volume->name},
-            {colo_t::white, double_to_string(node->work_time_ns / 1e6, 4) + " ms"},
             {colo_t::white, double_to_string(node->volume->static_temperature_k, 0) + " k"},
             {colo_t::white, double_to_string(node->children.size(), 0)},
+            {colo_t::white, double_to_string(node->volume->gas_mail.size(), 0)},
             {colo_t::white, double_to_string(node->volume->max_gas_mail_size, 0)},
+            {colo_t::white, double_to_string(node->work_time_ns / 1e6, 4) + " ms"},
         };
         draw_texts(circle.x_p, circle.y_p, texts, ui_n::node_font_multiplier, true);
     }
@@ -520,6 +521,7 @@ struct sdl_t
             {colo_t::white, double_to_string(parent->port->diameter_m, 3) + " m"},
             {colo_t::white, double_to_string(parent->port->length_m, 3) + " m"},
             {colo_t::white, double_to_string(parent->port->open_ratio, 3) + ""},
+            {colo_t::white, double_to_string(parent->port->work_time_ns / 1e6, 4) + " ms"},
         };
         draw_texts(xm_p, ym_p, texts, ui_n::node_font_multiplier, true);
     }
@@ -920,7 +922,7 @@ struct sdl_t
             {colo_t::white, "nigus, hailemariam copyright (c) 2015 cc-by-4.0: engine load and kinematics"},
             {colo_t::white, "lantinga, sam et. al copyright (c) 1997-2025 zlib: sdl2"},
             {colo_t::white, "yaghi, ange copyright (c) 2022 mit: exhaust impulses"},
-            {colo_t::white, "sondaar, marcel in public domain - this font"},
+            {colo_t::white, "sondaar, marcel in public domain: this font"},
             {colo_t::white, ""},
             {colo_t::white, "left click + drag : moves nodes"},
             {colo_t::white, " shift left click : select multiple nodes"},

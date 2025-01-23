@@ -748,6 +748,7 @@ struct ensim_t
             [](node_t* node)
             {
                 node->work_time_ns = 0.0;
+                node->port->work_time_ns = 0.0;
             }
         );
     }
@@ -799,7 +800,6 @@ struct ensim_t
             {
                 parent->volume->do_work();
                 parent->volume->compress();
-                parent->volume->autoignite();
                 parent->volume->ignite();
                 parent->volume->read_mail(cycle);
                 parent->port->open();
